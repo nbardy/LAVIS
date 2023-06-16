@@ -199,7 +199,7 @@ class Blip2T5Instruct(Blip2Base):
             )
             loss = outputs.loss
 
-            return {"loss": loss}
+            return {"loss": loss, "outputs": outputs}
 
     def prepare_few_shot_embeds(self, samples):
         this_n_fs = random.choices(
@@ -289,6 +289,7 @@ class Blip2T5Instruct(Blip2Base):
         length_penalty=1.0,
         num_captions=1,
         temperature=1,
+        return_outputs=False,
     ):
         if "prompt" in samples.keys():
             prompt = samples["prompt"]
@@ -409,8 +410,10 @@ class Blip2T5Instruct(Blip2Base):
             output_text = self.t5_tokenizer.batch_decode(
                 outputs, skip_special_tokens=True
             )
-
-        return output_text
+        if return_outputs is False:
+            return output_text
+        else:
+            return outputs, output_text
 
     def predict_answers(
         self,
